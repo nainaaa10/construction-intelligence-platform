@@ -1,106 +1,86 @@
-# Technical Architecture & System Design
-## Multimodal Construction Intelligence Platform
+# ⚡ SitePulse AI — System Architecture & Technical Design
 
-### 1. High-Level Architecture Overview
+## 1. High-Level Architecture Overview
 
-The system employs a modern, decoupled client-server architecture with an intelligent multimodal AI processing pipeline.
+SitePulse AI uses a modular architecture combining a web presentation tier, an API gateway with strict schema validation, and an AI intelligence tier powered by Google Gemini 3.5 Flash with a deterministic fallback engine.
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Client Tier (React 18 + Vite)"]
-        UI["Minimalist Web GUI (Tailwind / Geist Sans)"]
-        State["Application State & Presets"]
-        Uploader["Multi-Modal File Ingestion & Canvas"]
-        ExportEngine["Audit Report & Export Engine"]
+    subgraph Client ["Client Presentation Tier"]
+        UI1["Streamlit Live Console (app.py)"]
+        UI2["React 18 + Vite Web Application"]
     end
 
-    subgraph Gateway ["API Gateway (FastAPI / Uvicorn)"]
+    subgraph Gateway ["API Gateway (FastAPI)"]
         Router["FastAPI Router (/api/v1)"]
-        CORS["CORS & Request Middleware"]
-        PydanticLayer["Pydantic Data Contracts & Validation"]
+        Validation["Pydantic v2 Schema Validation"]
     end
 
-    subgraph CoreServices ["Application Core Services"]
+    subgraph Core ["Application Core Services"]
         SafetySvc["Safety Analysis Service (OSHA 1926)"]
-        CrackSvc["Crack & Structural Service (ACI 318)"]
-        PlanSvc["Project Planning Engine (WBS / Critical Path)"]
-        ValuationSvc["Real Estate Valuation Engine (Hedonic / Cap Rate)"]
-        LogSvc["Daily Site Assistant & Punchlist Generator"]
-        WeatherSvc["Weather Impact & Risk Advisory"]
-        ChatSvc["Domain Knowledge Assistant"]
+        CrackSvc["Crack Diagnostics Service (ACI 318)"]
+        PlanSvc["Project Planning Service (CPM / WBS)"]
+        ValuationSvc["Real Estate Valuation Engine"]
+        SiteLogSvc["Daily Site Assistant & Weather Service"]
+        ChatSvc["Construction Knowledge Bot"]
     end
 
     subgraph Intelligence ["Multimodal AI & Heuristics"]
-        GeminiAdapter["Google Gemini 1.5/2.0 Multimodal Pipeline"]
-        PromptEngine["Construction Persona Prompt Engine"]
-        RuleFallback["Resilient Deterministic Heuristic Fallback"]
+        GeminiAdapter["Google Gemini 3.5 Flash Pipeline"]
+        RuleFallback["Deterministic Engineering Rules"]
     end
 
-    UI --> Router
-    Uploader --> Router
-    Router --> PydanticLayer
-    PydanticLayer --> CoreServices
-    CoreServices --> GeminiAdapter
-    CoreServices --> RuleFallback
-    GeminiAdapter --> PromptEngine
-    PromptEngine -.-> |Live Vision API| GoogleGenAI["Google Gemini Cloud"]
-    CoreServices --> PydanticLayer
-    PydanticLayer --> ExportEngine
+    UI1 --> Core
+    UI2 --> Router
+    Router --> Validation
+    Validation --> Core
+    Core -->|"API Key Configured"| GeminiAdapter
+    Core -->|"Offline or Quota Cooldown"| RuleFallback
+    GeminiAdapter --> Validation
+    RuleFallback --> Validation
 ```
 
 ---
 
-### 2. Component Breakdown
+## 2. Component Breakdown
 
-#### A. Presentation Tier (`frontend/`)
-- **Technology**: React 18, Vite 5, Tailwind CSS, Lucide React icons.
-- **Design Paradigm**: Strict Linear/Vercel minimalist aesthetic (dark mode `#0A0A0A`, `#18181B`, `#FAFAFA` typography, ultra-subtle `#27272A` borders, zero rainbow clutter).
-- **Core Views / Tabs**:
-  1. **Site Safety Inspector**: Image upload with zoom & pan, PPE compliance gauges, detected hazards table with OSHA violation citations, immediate corrective actions.
-  2. **Crack & Structural Analyzer**: Concrete & masonry crack visual triage, crack width/pattern classifier, risk severity meter, structural remediation specs.
-  3. **Construction Project Planner**: Interactive parameters (area, budget, project type), 5-phase WBS timeline, Gantt breakdown, labor crew allocation, risk matrix.
-  4. **Real Estate Valuation Engine**: Property attributes, valuation estimate range, square foot rate, land-to-building ratio, rental yield & cap rate forecasting.
-  5. **Daily Site Assistant**: Field supervisor notes processor, workforce log, blocker/delay detection, automated punch list.
-  6. **Weather Advisory Engine**: Weather risk matrix across 5 construction trades (Concrete curing, Tower cranes, Painting/waterproofing, Deep trenching, High-elevation roofing).
-  7. **Construction Knowledge Chatbot**: Interactive multi-turn assistant grounded in building codes, concrete mix ratios, and standard operating procedures.
-  8. **Executive Report Generator**: Clean, printable PDF/HTML formatted site audit summary.
+### A. Presentation Tier
+- **Streamlit Console (`app.py`)**: Instant interactive dashboard featuring live camera capture, clipboard image paste (`Ctrl+V`), and 1-click Markdown dossier export.
+- **React Frontend (`frontend/`)**: React 18, Vite 5, Tailwind CSS, and Lucide icons providing a modern dark-mode interface with modular tab views.
 
-#### B. API Gateway & Validation Tier (`backend/app/api/` & `schemas/`)
-- **Technology**: FastAPI, Pydantic v2.
-- **Role**: Validates every incoming HTTP payload and enforces strict schema serialization on all AI model outputs.
-- **Fail-Safe Guarantee**: Even if an LLM outputs malformed JSON or times out, the system catches formatting anomalies and sanitizes responses through structured fallback parsers.
+### B. API Gateway & Validation Layer (`backend/app/api/` & `schemas/`)
+- **FastAPI**: Asynchronous routing with CORS middleware and OpenAPI/Swagger documentation (`/docs`).
+- **Pydantic v2**: Enforces strict typing and data validation on all incoming inputs and outgoing AI responses, ensuring structured JSON output.
 
-#### C. Multimodal AI Intelligence Tier (`backend/app/services/gemini_client.py`)
-- **Technology**: Google Generative AI (`gemini-1.5-flash` / `gemini-2.0-flash` or configurable).
-- **Dual Engine Execution**:
-  - **Live Mode**: Calls Gemini API with high-resolution image bytes and specialized construction engineering prompt templates.
-  - **Deterministic Engine**: Realistic, domain-calibrated rule-based engine providing instant analysis when no API key is set or when working offline. This guarantees 100% demo uptime and friction-free evaluation by instructors/mentors!
+### C. Multimodal AI & Fallback Engine (`backend/app/services/`)
+- **Google Gemini 3.5 Flash**: Processes site photos and structural imagery to detect workers, verify PPE, and classify concrete defects.
+- **Deterministic Heuristic Engine**: Calibrated rules grounded in OSHA 1926 and ACI 318 standards. Ensures 100% demo availability and zero crashes even when running offline.
 
 ---
 
-### 3. Data Flow Sequence (Safety Inspection Example)
+## 3. Data Flow Sequence (Safety Inspection Example)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Field Inspector / Mentor
-    participant WebUI as React Frontend
+    actor User as Field Inspector / Evaluator
+    participant WebUI as Web Frontend
     participant API as FastAPI Gateway
     participant Pydantic as Pydantic Schema Validator
-    participant AI as Gemini Multimodal Engine
-    participant Fallback as Deterministic Heuristic Core
+    participant AI as Gemini 3.5 Flash Vision
+    participant Fallback as Heuristics Engine
 
-    User->>WebUI: Uploads Site Photo (or selects Preset Sample)
+    User->>WebUI: Uploads or pastes site photograph
     WebUI->>API: POST /api/v1/safety/analyze (Multipart/form-data)
-    API->>Pydantic: Validate Image Format (JPEG/PNG/WebP, <= 25MB)
+    API->>Pydantic: Validate image format and file size
     alt Gemini API Key Available
-        API->>AI: Send Image Bytes + OSHA 1926 Inspection Prompt
-        AI-->>API: Structured JSON Output
-    else Offline / No API Key
-        API->>Fallback: Run Image Heuristic & Domain Analysis
-        Fallback-->>API: Calibrated Safety Assessment JSON
+        API->>AI: Send image bytes with OSHA 1926 vision prompt
+        AI-->>API: Return structured JSON detection output
+    else Offline or Cooldown
+        API->>Fallback: Run deterministic safety heuristics
+        Fallback-->>API: Return calibrated safety assessment
     end
-    API->>Pydantic: Validate against SafetyAnalysisResponse Schema
-    API-->>WebUI: 200 OK + JSON Payload
-    WebUI-->>User: Render Compliance Gauge, Hazards List, Corrective Actions
+    API->>Pydantic: Serialize against SafetyAnalysisResponse schema
+    API-->>WebUI: 200 OK with verified JSON payload
+    WebUI-->>User: Render bounding boxes, hazard scores, and corrective steps
 ```
