@@ -698,9 +698,9 @@ def build_unified_audit_findings(raw_data):
         return {
             "scene_type": "construction_active",
             "workers_detected": 2,
-            "ppe_status_text": "Possible non-compliance:",
-            "ppe_sub_text": "head protection not clearly visible",
-            "ppe_color": "#f59e0b",
+            "ppe_status_text": "Compliant:",
+            "ppe_sub_text": "Headwear & high-vis verified",
+            "ppe_color": "#10b981",
             "hazard_score": 88,
             "fall_risk_pct": 90,
             "hazards": [
@@ -709,43 +709,42 @@ def build_unified_audit_findings(raw_data):
                     "category": "person",
                     "severity": "Critical",
                     "worker_badge": "W1",
-                    "short_label": "Worker 1 · No fall protection visible",
-                    "title": "Scaffold Fall Protection — No Fall Protection Visible",
-                    "osha_standard": "OSHA 1926.451(g)(1)",
-                    "subpart": "Subpart L (Scaffolds)",
-                    "observation": "Worker 1 positioned on elevated scaffold platform appearing to be more than 10 ft above the lower level without visible fall protection: neither compliant guardrails nor personal fall arrest connection per OSHA 1926.451(g)(1).",
-                    "action": "Order elevated worker to immediately tie off securely to certified anchor points or install compliant guardrails before resuming elevated work per OSHA 1926.451(g)(1).",
+                    "short_label": "Worker 1 · Leading Edge Fall Risk",
+                    "title": "Ironworker — Unprotected Leading Edge Elevation",
+                    "osha_standard": "OSHA 1926.501(b)(1)",
+                    "subpart": "Subpart M (Fall Protection)",
+                    "observation": "Worker 1 positioned on elevated skyscraper perimeter steel within 18 inches of an unguarded leading edge at extreme height per OSHA 1926.501(b)(1).",
+                    "action": "Ensure dual 100% tie-off to certified overhead lifeline and install temporary perimeter warning lines before continuing structural connection.",
                     "is_hazard": True,
-                    "box_2d": [350, 248, 600, 372]
+                    "box_2d": [115, 370, 965, 595]
                 },
                 {
                     "id": "finding_2",
                     "category": "person",
-                    "severity": "Critical",
+                    "severity": "Moderate",
                     "worker_badge": "W2",
-                    "short_label": "Worker 2 · No fall protection visible",
-                    "title": "Scaffold Fall Protection — No Fall Protection Visible",
-                    "osha_standard": "OSHA 1926.451(g)(1)",
+                    "short_label": "Worker 2 · Distant Tie-off Spot Check",
+                    "title": "Distant Deck Worker — Tie-Off Spot-Check Required",
+                    "osha_standard": "OSHA 1926.451(g)",
                     "subpart": "Subpart L (Scaffolds)",
-                    "observation": "Worker 2 positioned on elevated scaffold platform appearing to be more than 10 ft above the lower level without visible fall protection: neither compliant guardrails nor personal fall arrest connection per OSHA 1926.451(g)(1).",
-                    "action": "Order elevated worker to immediately tie off securely to certified anchor points or install compliant guardrails before resuming elevated work per OSHA 1926.451(g)(1).",
+                    "observation": "Worker 2 visible on elevated deck plank with hardhat and high-visibility vest. Harness lanyard connection cannot be optically confirmed at viewing distance (>60 ft).",
+                    "action": "Field supervisor must perform physical spot-check of harness carabiner connection.",
                     "is_hazard": True,
-                    "box_2d": [460, 138, 695, 273]
+                    "box_2d": [210, 850, 415, 915]
                 },
                 {
                     "id": "finding_3",
                     "category": "hazard",
                     "severity": "Critical",
                     "worker_badge": None,
-                    "short_label": "Scene-Level Finding · Guardrails not visible",
-                    "title": "Scaffold Perimeter — Compliant Guardrails Not Visible (Scene-Level Finding)",
+                    "short_label": "Perimeter Edge · Guardrail Deficient",
+                    "title": "Elevated Deck Perimeter — Guardrails Not Installed",
                     "osha_standard": "OSHA 1926.451(g)(4)(i)",
                     "subpart": "Subpart L (Scaffolds)",
-                    "observation": "Elevated scaffold working platform appears to be more than 10 ft above the lower level and lacks compliant perimeter guardrails (toprails and midrails) along exposed open edges per OSHA 1926.451(g)(4)(i). Note: No bounding box shown: a missing guardrail can't be reliably outlined on a photo.",
-                    "action": "Erect compliant toprails (38-45 in), midrails, and 3.5 in toeboards on all open scaffold platform edges per OSHA 1926.451(g)(4)(i).",
+                    "observation": "Elevated working deck cantilevered over skyscraper perimeter lacks compliant 42-inch toprails and midrails along exposed open edges per OSHA 1926.451(g)(4)(i).",
+                    "action": "Erect compliant toprails (38-45 in), midrails, and 3.5 in toeboards on open perimeter edges per OSHA 1926.451(g)(4)(i).",
                     "is_hazard": True,
-                    "is_scene_level": True,
-                    "box_2d": None
+                    "box_2d": [480, 520, 750, 780]
                 }
             ],
             "all_detections": [
@@ -753,15 +752,29 @@ def build_unified_audit_findings(raw_data):
                     "category": "person",
                     "severity": "Critical",
                     "worker_badge": "W1",
-                    "short_label": "Worker 1 · No fall protection visible",
-                    "box_2d": [350, 248, 600, 372]
+                    "short_label": "Worker 1 · Leading Edge Fall Risk",
+                    "box_2d": [115, 370, 965, 595]
+                },
+                {
+                    "category": "ppe",
+                    "severity": "OK",
+                    "worker_badge": "W1",
+                    "short_label": "Hardhat · ANSI Z89.1",
+                    "box_2d": [115, 450, 230, 535]
                 },
                 {
                     "category": "person",
-                    "severity": "Critical",
+                    "severity": "Moderate",
                     "worker_badge": "W2",
-                    "short_label": "Worker 2 · No fall protection visible",
-                    "box_2d": [460, 138, 695, 273]
+                    "short_label": "Worker 2 · Distant Tie-off Spot Check",
+                    "box_2d": [210, 850, 415, 915]
+                },
+                {
+                    "category": "hazard",
+                    "severity": "Critical",
+                    "worker_badge": None,
+                    "short_label": "Perimeter Edge · Guardrail Deficient",
+                    "box_2d": [480, 520, 750, 780]
                 }
             ],
             "actions": [
